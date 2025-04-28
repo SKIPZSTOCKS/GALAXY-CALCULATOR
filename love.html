@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculatrice Galaxie</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: black;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .calculator {
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.7), 0 0 50px rgba(138, 43, 226, 0.7);
+      width: 350px;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: white;
+      text-shadow: 0 0 10px #fff;
+    }
+
+    #display {
+      width: 100%;
+      padding: 15px;
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-align: right;
+      border-radius: 12px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      backdrop-filter: blur(5px);
+      animation: pulse 2s infinite;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 20px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      backdrop-filter: blur(5px);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.4);
+      color: #000;
+      transform: scale(1.1);
+    }
+
+    .operation {
+      background-color: rgba(0, 255, 255, 0.5);
+    }
+
+    .special {
+      background-color: rgba(255, 0, 255, 0.5);
+    }
+
+    .equal {
+      background-color: rgba(138, 43, 226, 0.7);
+      grid-column: span 2;
+    }
+
+    @keyframes pulse {
+      0% { text-shadow: 0 0 5px #fff, 0 0 10px #6a11cb, 0 0 20px #2575fc; }
+      50% { text-shadow: 0 0 20px #fff, 0 0 30px #6a11cb, 0 0 40px #2575fc; }
+      100% { text-shadow: 0 0 5px #fff, 0 0 10px #6a11cb, 0 0 20px #2575fc; }
+    }
+
+    .pop {
+      animation: pop 0.3s forwards;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+
+<canvas id="galaxy"></canvas>
+
+<div class="calculator">
+  <h1>GALAXY calculator</h1>
+  <input type="text" id="display" readonly>
+
+  <div class="buttons">
+    <button onclick="append('7')">7</button>
+    <button onclick="append('8')">8</button>
+    <button onclick="append('9')">9</button>
+    <button class="operation" onclick="append('/')">÷</button>
+
+    <button onclick="append('4')">4</button>
+    <button onclick="append('5')">5</button>
+    <button onclick="append('6')">6</button>
+    <button class="operation" onclick="append('*')">×</button>
+
+    <button onclick="append('1')">1</button>
+    <button onclick="append('2')">2</button>
+    <button onclick="append('3')">3</button>
+    <button class="operation" onclick="append('-')">-</button>
+
+    <button onclick="append('0')">0</button>
+    <button onclick="append('.')">.</button>
+    <button class="special" onclick="sqrt()">√</button>
+    <button class="operation" onclick="append('+')">+</button>
+
+    <button class="special" onclick="power()">x²</button>
+    <button class="special" onclick="sinus()">sin</button>
+    <button class="special" onclick="cosinus()">cos</button>
+    <button class="special" onclick="tangente()">tan</button>
+
+    <button onclick="clearDisplay()">C</button>
+    <button class="equal" onclick="calculate()">=</button>
+  </div>
+</div>
+
+<script>
+  function animatePop() {
+    const display = document.getElementById('display');
+    display.classList.remove('pop'); // reset
+    void display.offsetWidth; // force reflow
+    display.classList.add('pop');
+  }
+
+  function append(value) {
+    document.getElementById('display').value += value;
+    animatePop();
+  }
+
+  function clearDisplay() {
+    document.getElementById('display').value = '';
+    animatePop();
+  }
+
+  function calculate() {
+    try {
+      document.getElementById('display').value = eval(document.getElementById('display').value);
+      animatePop();
+    } catch {
+      document.getElementById('display').value = 'Erreur';
+      animatePop();
+    }
+  }
+
+  function sqrt() {
+    const val = parseFloat(document.getElementById('display').value);
+    document.getElementById('display').value = Math.sqrt(val);
+    animatePop();
+  }
+
+  function power() {
+    const val = parseFloat(document.getElementById('display').value);
+    document.getElementById('display').value = Math.pow(val, 2);
+    animatePop();
+  }
+
+  function sinus() {
+    const val = parseFloat(document.getElementById('display').value);
+    document.getElementById('display').value = Math.sin(val * Math.PI / 180).toFixed(4);
+    animatePop();
+  }
+
+  function cosinus() {
+    const val = parseFloat(document.getElementById('display').value);
+    document.getElementById('display').value = Math.cos(val * Math.PI / 180).toFixed(4);
+    animatePop();
+  }
+
+  function tangente() {
+    const val = parseFloat(document.getElementById('display').value);
+    document.getElementById('display').value = Math.tan(val * Math.PI / 180).toFixed(4);
+    animatePop();
+  }
+
+  // Galaxy background
+  const canvas = document.getElementById('galaxy');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  for (let i = 0; i < 200; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 2,
+      velocity: Math.random() * 0.5
+    });
+  }
+
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    stars.forEach(star => {
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+      ctx.fill();
+      star.y += star.velocity;
+      if (star.y > canvas.height) {
+        star.y = 0;
+        star.x = Math.random() * canvas.width;
+      }
+    });
+    requestAnimationFrame(drawStars);
+  }
+
+  drawStars();
+</script>
+
+</body>
+</html>
+
